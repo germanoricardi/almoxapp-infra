@@ -1,0 +1,10 @@
+services:
+  almoxapp-frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"
+
+  almoxapp-backend:
+    build: ./backend
+    ports:
+      - "3002:3000"
