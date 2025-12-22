@@ -1,13 +1,48 @@
 services:
-  almoxapp-frontend:
-    build: ./frontend
+  almoxapp-db:
+    image: postgres:16-alpine
+    container_name: almoxapp-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: almoxapp
     ports:
-      - "3001:3000"
+      - "5433:5432"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - devNetwork
 
   almoxapp-backend:
     build: ./backend
+    container_name: almoxapp-backend
     ports:
       - "3002:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - almoxapp-db
+    networks:
+      - devNetwork
+    command: npm run start:dev
+  
+  almoxapp-frontend:
+    build: ./frontend
+    container_name: almoxapp-frontend
+    ports:
+      - "3001:3000"
+    depends_on:
+      - almoxapp-backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - devNetwork
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  devNetwork:
